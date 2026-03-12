@@ -1,0 +1,15 @@
+[project]
+name = "brainrot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "anki>=25.9.2",
+    "aqt>=25.9.2",
+]
+
+[dependency-groups]
+dev = [
+    "ty>=0.0.21",
+]
