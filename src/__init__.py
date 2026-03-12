@@ -1,1 +1,1 @@
-from . import progress_bar, sound_effects
+from . import progress_bar, sound_effects, confetti

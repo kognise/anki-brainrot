@@ -36,17 +36,13 @@ for sound_name in finish_sound_names:
 sound_effects["finish"] = finish_sound_effects["nyt"]
 
 # Register GUI hooks
-def reviewer_did_answer_card(self: Reviewer, card: Card, ease: Literal[1, 2, 3, 4]):
-    if ease == 1:
-        sound_name = "again"
-    elif ease == 2:
-        sound_name = "hard"
-    elif ease == 3:
-        sound_name = "good"
-    elif ease >= 4:
-        sound_name = "easy"
-    else:
-        return
+def reviewer_did_answer_card(reviewer: Reviewer, card: Card, ease: Literal[1, 2, 3, 4]):
+    sound_name = {
+        1: "again",
+        2: "hard",
+        3: "good",
+        4: "easy",
+    }[ease]
 
     effect = sound_effects[sound_name]
     effect.play()
