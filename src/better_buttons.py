@@ -52,6 +52,28 @@ def get_answer_bar_styles() -> str:
             color: #3a3a3a;
         }
 
+        .nobold, .stattxt {
+            font-size: 12px;
+            left: unset;
+            top: 2px;
+            right: -12px;
+            transform: translate(-10%%, -50%%);
+            background: #dddddd;
+            padding: 2px 4px;
+            border-radius: 3px;
+            z-index: 1;
+        }
+
+        .nightMode .nobold,
+        .nightMode .stattxt {
+            background: #222222;
+        }
+        
+        .nobold:empty,
+        .stattxt:empty {
+            display: none;
+        }
+
         button[onclick*="ease1"] {
             --dev-kognise-brainrot--accent: %(again_color)s;
         }
