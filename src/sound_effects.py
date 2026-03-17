@@ -2,7 +2,7 @@ from aqt.main import MainWindowState
 from typing import Literal, Union
 from aqt import QUrl, gui_hooks
 from PyQt6.QtMultimedia import QSoundEffect
-from .util import addon_path
+from .util import addon_path, get_config, config_changed_hooks
 import os
 from aqt.reviewer import Reviewer
 from anki.cards import Card
@@ -18,6 +18,7 @@ sound_names = [
 ]
 finish_sound_names = [
     "nyt",
+    "overwatch",
 ]
 
 sound_effects: dict[str, QSoundEffect] = {}
@@ -33,10 +34,18 @@ for sound_name in finish_sound_names:
     effect = QSoundEffect()
     effect.setSource(QUrl.fromLocalFile(path))
     finish_sound_effects[sound_name] = effect
-sound_effects["finish"] = finish_sound_effects["nyt"]
+
+def config_changed():
+    sound_effects["finish"] = finish_sound_effects[get_config()["sound_effects"]["victory_sound"]]
+
+config_changed()
+config_changed_hooks.append(config_changed)
 
 # Register GUI hooks
 def reviewer_did_answer_card(reviewer: Reviewer, card: Card, ease: Literal[1, 2, 3, 4]):
+    if not get_config()["sound_effects"]["enabled"]:
+        return
+
     sound_name = {
         1: "again",
         2: "hard",
@@ -50,16 +59,25 @@ def reviewer_did_answer_card(reviewer: Reviewer, card: Card, ease: Literal[1, 2,
 gui_hooks.reviewer_did_answer_card.append(reviewer_did_answer_card)
 
 def reviewer_will_bury_card(id: int):
+    if not get_config()["sound_effects"]["enabled"]:
+        return
+
     sound_effects["buried"].play()
 
 gui_hooks.reviewer_will_bury_card.append(reviewer_will_bury_card)
 
 def reviewer_will_suspend_card(id: int):
+    if not get_config()["sound_effects"]["enabled"]:
+        return
+
     sound_effects["suspended"].play()
 
 gui_hooks.reviewer_will_suspend_card.append(reviewer_will_suspend_card)
 
 def state_did_change(new_state: MainWindowState, old_state: MainWindowState):
+    if not get_config()["sound_effects"]["enabled"]:
+        return
+        
     if new_state == "overview" and old_state == "review":
         sound_effects["finish"].play()
 

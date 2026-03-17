@@ -1,5 +1,5 @@
 from aqt.main import MainWindowState
-from typing import Union
+from typing import Union, Optional
 from aqt import QProgressBar, Qt, QWidget, QDockWidget, gui_hooks, mw, QLabel
 from anki.cards import Card
 from anki.collection import OpChanges
@@ -47,7 +47,7 @@ def reviewer_did_show_question(card: Card):
 
 gui_hooks.reviewer_did_show_question.append(reviewer_did_show_question)
 
-def operation_did_execute(changes: OpChanges, handler: Union[object, None]):
+def operation_did_execute(changes: OpChanges, handler: Optional[object]):
     if changes.study_queues:
         update_progress_bar()
 

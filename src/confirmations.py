@@ -1,4 +1,4 @@
-from .util import get_ease_colors
+from .util import get_ease_colors, get_config
 from typing import Literal
 from aqt import gui_hooks, QParallelAnimationGroup
 from aqt.reviewer import Reviewer
@@ -89,6 +89,9 @@ def show_confirmation_label(
     main_group.start()
 
 def reviewer_did_answer_card(reviewer: Reviewer, card: Card, ease: Literal[1, 2, 3, 4]):
+    if not get_config()["confirmation_popups"]["enabled"]:
+        return
+    
     ease_colors = get_ease_colors()
     color = {
         1: ease_colors["again_color"],

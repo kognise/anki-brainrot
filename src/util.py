@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, Callable
 from aqt.theme import theme_manager
 from aqt import mw
 import os
@@ -62,3 +62,14 @@ def get_ease_colors() -> EaseColors:
             "good_color": "#30c257",
             "easy_color": "#61a8ff",
         }
+
+ConfigChangedHook = Callable[[], None]
+config_changed_hooks: list[ConfigChangedHook] = []
+
+def get_config() -> dict:
+    return mw.addonManager.getConfig(__name__) or {}
+
+def set_config(config: dict):
+    mw.addonManager.writeConfig(__name__, config)
+    for hook in config_changed_hooks:
+        hook()

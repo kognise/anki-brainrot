@@ -1,6 +1,6 @@
 from aqt import gui_hooks, QLabel, mw, Qt, QFrame, QPalette, QColor, QTimer, QPropertyAnimation, QPoint
 from anki.cards import Card
-from .util import addon_path, get_cards_done_today
+from .util import addon_path, get_cards_done_today, get_config
 import os
 import random
 
@@ -42,6 +42,9 @@ def random_encouragement(card_count: int) -> str:
 
 def reviewer_did_show_question(card: Card):
     global next_popup_at
+
+    if not get_config()["puppy_reinforcement"]["enabled"]:
+        return
 
     deck = mw.col.decks.current() if mw.col else None
     if not deck:

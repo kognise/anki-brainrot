@@ -4,7 +4,7 @@ from aqt.theme import theme_manager
 from aqt.toolbar import BottomBar
 import json
 from aqt.reviewer import ReviewerBottomBar
-from typing import Union
+from typing import Union, Optional
 from aqt.webview import WebContent
 from aqt import gui_hooks, mw
 
@@ -107,7 +107,7 @@ def apply_main_bar_styles() -> None:
 
 apply_main_bar_styles()
 
-def on_webview_will_set_content(web_content: WebContent, context: Union[object, None]):
+def on_webview_will_set_content(web_content: WebContent, context: Optional[object]):
     if isinstance(context, ReviewerBottomBar):
         web_content.head += f"""
             <style id="{STYLE_ID}">
