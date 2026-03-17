@@ -33,7 +33,6 @@ class SettingsDialog(QDialog):
         self.confirmation_popups_checkbox = QCheckBox("✅ Confirmation popups", self)
         self.puppy_reinforcement_checkbox = QCheckBox("🐶 Puppy reinforcement", self)
         self.sound_effects_checkbox = QCheckBox("🔔 Sound effects", self)
-        self.styled_buttons_checkbox = QCheckBox("🎨 Styled buttons", self)
 
         def make_feature_widget(checkbox: QCheckBox, nested_layout: Optional[QHBoxLayout] = None):
             feature_widget = QWidget(self)
@@ -57,7 +56,6 @@ class SettingsDialog(QDialog):
         features_layout.addWidget(make_feature_widget(self.confirmation_popups_checkbox))
         features_layout.addWidget(make_feature_widget(self.puppy_reinforcement_checkbox))
         features_layout.addWidget(make_feature_widget(self.sound_effects_checkbox, sound_layout))
-        features_layout.addWidget(make_feature_widget(self.styled_buttons_checkbox))
         root_layout.addWidget(features_group)
 
         self.deck_completion_sound_label.setEnabled(self.sound_effects_checkbox.isChecked())
@@ -78,7 +76,6 @@ class SettingsDialog(QDialog):
         qconnect(self.confirmation_popups_checkbox.toggled, self._save_config)
         qconnect(self.puppy_reinforcement_checkbox.toggled, self._save_config)
         qconnect(self.sound_effects_checkbox.toggled, self._save_config)
-        qconnect(self.styled_buttons_checkbox.toggled, self._save_config)
         qconnect(self.deck_completion_sound_select.currentTextChanged, self._save_config)
 
     def _load_config(self):
@@ -89,7 +86,6 @@ class SettingsDialog(QDialog):
         self.confirmation_popups_checkbox.setChecked(config["confirmation_popups"]["enabled"])
         self.puppy_reinforcement_checkbox.setChecked(config["puppy_reinforcement"]["enabled"])
         self.sound_effects_checkbox.setChecked(config["sound_effects"]["enabled"])
-        self.styled_buttons_checkbox.setChecked(config["styled_buttons"]["enabled"])
 
         saved_finish_sound = config["sound_effects"]["victory_sound"]
         saved_label = next(
@@ -114,7 +110,6 @@ class SettingsDialog(QDialog):
                 "enabled": self.sound_effects_checkbox.isChecked(),
                 "victory_sound": finish_sound,
             },
-            "styled_buttons": {"enabled": self.styled_buttons_checkbox.isChecked()},
         })
 
 def open_settings_dialog():

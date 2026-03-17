@@ -6,6 +6,5 @@
     "sound_effects": {
         "enabled": true,
         "victory_sound": "nyt"
-    },
-    "styled_buttons": { "enabled": true }
+    }
 }
