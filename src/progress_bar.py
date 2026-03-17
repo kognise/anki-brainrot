@@ -38,8 +38,8 @@ def update_progress_bar():
     due_count = get_cards_due_today(deck_id)
     total = done_count + due_count
 
-    bar.setRange(0, total)
-    bar.setValue(min(done_count, total))
+    bar.setRange(0, total + 1)
+    bar.setValue(min(done_count, total) + 1)
 
 # Register GUI hooks
 def reviewer_did_show_question(card: Card):
