@@ -23,7 +23,6 @@ last_message = None
 next_popup_at = None
 
 def next_interval() -> int:
-    return 1
     return max(1, ENCOURAGE_EVERY + random.randint(-MAX_SPREAD, MAX_SPREAD))
 
 def random_encouragement(card_count: int) -> str:
