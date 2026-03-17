@@ -7,7 +7,7 @@ import os
 from aqt.reviewer import Reviewer
 from anki.cards import Card
 
-sounds_dir = os.path.join(addon_path, "sounds")
+sounds_dir = os.path.join(addon_path, "assets", "sounds")
 sound_names = [
     "again",
     "easy",
