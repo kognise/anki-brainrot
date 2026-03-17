@@ -31,8 +31,8 @@ class SettingsDialog(QDialog):
         self.confetti_checkbox = QCheckBox("🎊 Confetti", self)
         self.progress_bar_checkbox = QCheckBox("➡️ Progress bar", self)
         self.confirmation_popups_checkbox = QCheckBox("✅ Confirmation popups", self)
-        self.puppy_reinforcement_checkbox = QCheckBox("🐶 Puppy reinforcement", self)
         self.sound_effects_checkbox = QCheckBox("🔔 Sound effects", self)
+        self.puppy_reinforcement_checkbox = QCheckBox("🐶 Puppy reinforcement", self)
 
         def make_feature_widget(checkbox: QCheckBox, nested_layout: Optional[QHBoxLayout] = None):
             feature_widget = QWidget(self)
@@ -54,8 +54,8 @@ class SettingsDialog(QDialog):
         features_layout.addWidget(make_feature_widget(self.confetti_checkbox))
         features_layout.addWidget(make_feature_widget(self.progress_bar_checkbox))
         features_layout.addWidget(make_feature_widget(self.confirmation_popups_checkbox))
-        features_layout.addWidget(make_feature_widget(self.puppy_reinforcement_checkbox))
         features_layout.addWidget(make_feature_widget(self.sound_effects_checkbox, sound_layout))
+        features_layout.addWidget(make_feature_widget(self.puppy_reinforcement_checkbox))
         root_layout.addWidget(features_group)
 
         self.deck_completion_sound_label.setEnabled(self.sound_effects_checkbox.isChecked())
@@ -74,9 +74,9 @@ class SettingsDialog(QDialog):
         qconnect(self.confetti_checkbox.toggled, self._save_config)
         qconnect(self.progress_bar_checkbox.toggled, self._save_config)
         qconnect(self.confirmation_popups_checkbox.toggled, self._save_config)
-        qconnect(self.puppy_reinforcement_checkbox.toggled, self._save_config)
         qconnect(self.sound_effects_checkbox.toggled, self._save_config)
         qconnect(self.deck_completion_sound_select.currentTextChanged, self._save_config)
+        qconnect(self.puppy_reinforcement_checkbox.toggled, self._save_config)
 
     def _load_config(self):
         config = get_config()
@@ -84,7 +84,6 @@ class SettingsDialog(QDialog):
         self.confetti_checkbox.setChecked(config["confetti"]["enabled"])
         self.progress_bar_checkbox.setChecked(config["progress_bar"]["enabled"])
         self.confirmation_popups_checkbox.setChecked(config["confirmation_popups"]["enabled"])
-        self.puppy_reinforcement_checkbox.setChecked(config["puppy_reinforcement"]["enabled"])
         self.sound_effects_checkbox.setChecked(config["sound_effects"]["enabled"])
 
         saved_finish_sound = config["sound_effects"]["victory_sound"]
@@ -93,6 +92,8 @@ class SettingsDialog(QDialog):
             "Crossword",
         )
         self.deck_completion_sound_select.setCurrentText(saved_label)
+
+        self.puppy_reinforcement_checkbox.setChecked(config["puppy_reinforcement"]["enabled"])
         
         self._is_loading = False
 
@@ -105,11 +106,11 @@ class SettingsDialog(QDialog):
             "confetti": {"enabled": self.confetti_checkbox.isChecked()},
             "progress_bar": {"enabled": self.progress_bar_checkbox.isChecked()},
             "confirmation_popups": {"enabled": self.confirmation_popups_checkbox.isChecked()},
-            "puppy_reinforcement": {"enabled": self.puppy_reinforcement_checkbox.isChecked()},
             "sound_effects": {
                 "enabled": self.sound_effects_checkbox.isChecked(),
                 "victory_sound": finish_sound,
             },
+            "puppy_reinforcement": {"enabled": self.puppy_reinforcement_checkbox.isChecked()},
         })
 
 def open_settings_dialog():
