@@ -4,7 +4,7 @@ from .util import addon_path, get_cards_done_today, get_config
 import os
 import random
 
-puppy_dir = os.path.join(addon_path, "assets", "puppies")
+puppy_dir = os.path.join(addon_path, "user_files", "puppies")
 puppy_paths = [os.path.join(puppy_dir, file) for file in os.listdir(puppy_dir)]
 
 DURATION_MS = 3000

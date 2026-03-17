@@ -25,7 +25,7 @@ def confetti(reviewer: Reviewer, additional_options: dict = {}):
 
 def on_webview_will_set_content(web_content: WebContent, context: Optional[object]):
     if context and isinstance(context, Reviewer):
-        web_content.js.append(f"/_addons/{addon_id}/assets/vendor/canvas-confetti.min.js")
+        web_content.js.append(f"/_addons/{addon_id}/vendor/canvas-confetti.min.js")
 
 gui_hooks.webview_will_set_content.append(on_webview_will_set_content)
 

@@ -1,6 +1,6 @@
 from aqt import mw
 
-mw.addonManager.setWebExports(__name__, r"assets/.*")
+mw.addonManager.setWebExports(__name__, r"vendor/.*")
 
 from . import (
     progress_bar,
