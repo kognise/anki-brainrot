@@ -1,3 +1,4 @@
+from typing import TypedDict
 from aqt.theme import theme_manager
 from aqt import mw
 import os
@@ -40,7 +41,13 @@ def get_cards_due_today(deck_id: int) -> int:
         return 0
     return deck.review_count + deck.learn_count + deck.new_count * 2
 
-def get_ease_colors():
+class EaseColors(TypedDict):
+    again_color: str
+    hard_color: str
+    good_color: str
+    easy_color: str
+
+def get_ease_colors() -> EaseColors:
     if theme_manager.night_mode:
         return {
             "again_color": "#ff6961",

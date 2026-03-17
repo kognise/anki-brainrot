@@ -81,15 +81,18 @@ def reviewer_did_show_question(card: Card):
     palette.setColor(QPalette.ColorRole.WindowText, QColor(TOOLTIP_FG))
     label.setPalette(palette)
     label.setAutoFillBackground(True)
-    label.setStyleSheet(f"font-size: 16px; line-height: 1.5;")
+    label.setStyleSheet(f"""
+        font-size: 16px;
+        line-height: 1.5;
+    """)
     label.adjustSize()
     
-    parent = mw.app.activeWindow() or mw
     x = 0
-    y = parent.height() - label.height() - 100
-    label.move(parent.mapToGlobal(parent.rect().topLeft()) + QPoint(x, y))
+    y = mw.height() - label.height() - 100
+    label.move(mw.mapToGlobal(mw.rect().topLeft()) + QPoint(x, y))
     label.show()
-    animation = QPropertyAnimation(label, b"windowOpacity")
+
+    animation = QPropertyAnimation(label, b"windowOpacity", label)
     animation.setStartValue(1.0)
     animation.setEndValue(0.0)
     animation.setDuration(250)
