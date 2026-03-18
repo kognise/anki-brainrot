@@ -1,30 +1,37 @@
 from aqt.main import MainWindowState
 from typing import Union, Optional
-from aqt import QProgressBar, Qt, QWidget, QDockWidget, gui_hooks, mw, QLabel
+from aqt import QProgressBar, Qt, QWidget, gui_hooks, mw, QLabel, colors
+from aqt.theme import theme_manager
+from aqt.toolbar import TopToolbar
+from aqt.webview import WebContent
 from anki.cards import Card
 from anki.collection import OpChanges
-from .util import get_cards_done_today, get_cards_due_today, get_config, config_changed_hooks
+from .util import get_cards_done_today, get_cards_due_today, get_config, config_changed_hooks, get_ease_colors
 
 # Create the widget
 bar = QProgressBar()
 bar.setTextVisible(False)
 bar.setOrientation(Qt.Orientation.Horizontal)
 bar.setFixedHeight(20)
-bar.setStyleSheet("""
-    QProgressBar {
-        background-color: transparent;
-    }
-                    
-    QProgressBar::chunk {
-        background-color: #3399cc;
-        margin: 0px;
-    }
-""")
 
-widget = QDockWidget()
-widget.setWidget(bar)
-widget.setTitleBarWidget(QWidget())
-mw.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, widget)
+def update_style():
+    bg_color = colors.CANVAS if mw.pm.minimalist_mode() else colors.CANVAS_ELEVATED
+    bg = theme_manager.var(bg_color)
+    fg = get_ease_colors()["easy_color"]
+    bar.setStyleSheet(f"""
+        QProgressBar {{
+            background-color: {bg};
+            border: none;
+        }}
+        QProgressBar::chunk {{
+            background-color: {fg};
+            margin: 0px;
+        }}
+    """)
+
+update_style()
+
+mw.mainLayout.insertWidget(0, bar)
 
 enabled = False
 
@@ -66,11 +73,34 @@ def state_did_change(new_state: MainWindowState, old_state: MainWindowState):
 
 gui_hooks.state_did_change.append(state_did_change)
 
+gui_hooks.state_did_change.append(state_did_change)
+
+def theme_did_change():
+    update_style()
+
+gui_hooks.theme_did_change.append(theme_did_change)
+
+def body_classes_need_update():
+    update_style()
+
+gui_hooks.body_classes_need_update.append(body_classes_need_update)
+
+def webview_will_set_content(web_content: WebContent, context):
+    # Clip the top shadow from the toolbar so it merges with the progress bar
+    if isinstance(context, TopToolbar):
+        web_content.head += """
+            <style>
+                .toolbar { clip-path: inset(0 -10px -10px -10px) !important; }
+            </style>
+        """
+
+gui_hooks.webview_will_set_content.append(webview_will_set_content)
+
 # Config hook
 def config_changed():
     global enabled
     enabled = get_config()["progress_bar"]["enabled"]
-    widget.setVisible(enabled)
+    bar.setVisible(enabled)
     if enabled:
         update_progress_bar()
 
