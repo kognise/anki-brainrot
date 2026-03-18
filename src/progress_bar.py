@@ -15,8 +15,13 @@ bar.setOrientation(Qt.Orientation.Horizontal)
 bar.setFixedHeight(20)
 
 def update_style():
-    bg_color = colors.CANVAS if mw.pm.minimalist_mode() else colors.CANVAS_ELEVATED
-    bg = theme_manager.var(bg_color)
+    if mw.pm.minimalist_mode():
+        bg = theme_manager.var(colors.CANVAS)
+    elif mw.state == "review":
+        c = theme_manager.qcolor(colors.CANVAS_ELEVATED)
+        bg = f"rgba({c.red()}, {c.green()}, {c.blue()}, 0.4)"
+    else:
+        bg = theme_manager.var(colors.CANVAS_ELEVATED)
     fg = get_ease_colors()["easy_color"]
     bar.setStyleSheet(f"""
         QProgressBar {{
@@ -69,9 +74,10 @@ gui_hooks.operation_did_execute.append(operation_did_execute)
 def state_did_change(new_state: MainWindowState, old_state: MainWindowState):
     if not enabled:
         return
+    
+    # Defer the update so we're slightly more in sync with the webview
+    mw.toolbarWeb.evalWithCallback("1", lambda _: update_style())
     update_progress_bar()
-
-gui_hooks.state_did_change.append(state_did_change)
 
 gui_hooks.state_did_change.append(state_did_change)
 
@@ -90,7 +96,10 @@ def webview_will_set_content(web_content: WebContent, context):
     if isinstance(context, TopToolbar):
         web_content.head += """
             <style>
-                .toolbar { clip-path: inset(0 -10px -10px -10px) !important; }
+                .toolbar {
+                    clip-path: inset(0 -10px -10px -10px) !important;
+                    transition: none !important;
+                }
             </style>
         """
 

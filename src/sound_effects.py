@@ -1,8 +1,8 @@
 from aqt.main import MainWindowState
 from typing import Literal, Union
-from aqt import QUrl, gui_hooks
+from aqt import QUrl, gui_hooks, mw
 from PyQt6.QtMultimedia import QSoundEffect
-from .util import addon_path, get_config, config_changed_hooks
+from .util import addon_path, get_config, config_changed_hooks, get_cards_due_today
 import os
 from aqt.reviewer import Reviewer
 from anki.cards import Card
@@ -78,7 +78,10 @@ def state_did_change(new_state: MainWindowState, old_state: MainWindowState):
     if not get_config()["sound_effects"]["enabled"]:
         return
         
-    if new_state == "overview" and old_state == "review":
+    deck = mw.col.decks.current() if mw.col else None
+    cards_due = get_cards_due_today(deck["id"]) if deck else 0
+    
+    if new_state == "overview" and old_state == "review" and cards_due == 0:
         sound_effects["finish"].play()
 
 gui_hooks.state_did_change.append(state_did_change)
