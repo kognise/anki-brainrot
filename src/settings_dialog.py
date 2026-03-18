@@ -1,5 +1,5 @@
 from typing import Optional
-from aqt import QAction, qconnect, mw, QDialog
+from aqt import QAction, gui_hooks, qconnect, mw, QDialog
 from PyQt6.QtMultimedia import QSoundEffect
 from aqt.qt import (
     QCheckBox,
@@ -303,6 +303,10 @@ qconnect(action.triggered, open_settings_dialog)
 mw.form.menuTools.addAction(action)
 mw.addonManager.setConfigAction(__name__, open_settings_dialog)
 
-if get_config().get("is_first_launch", True):
-    set_config({**get_config(), "is_first_launch": False})
-    open_settings_dialog()
+def maybe_open_settings_dialog_on_first_launch() -> None:
+    config = get_config()
+    if config.get("is_first_launch", True):
+        set_config({**config, "is_first_launch": False})
+        open_settings_dialog()
+
+gui_hooks.profile_did_open.append(maybe_open_settings_dialog_on_first_launch)
