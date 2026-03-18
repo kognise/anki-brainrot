@@ -1,6 +1,18 @@
 from typing import Optional
 from aqt import QAction, qconnect, mw, QDialog
-from aqt.qt import QCheckBox, QComboBox, QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QWidget
+from aqt.qt import (
+    QCheckBox,
+    QComboBox,
+    QDialogButtonBox,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLayout,
+    QSizePolicy,
+    Qt,
+    QVBoxLayout,
+    QWidget,
+)
 from .util import get_config, set_config
 
 FINISH_SOUND_BY_LABEL = {
@@ -8,21 +20,32 @@ FINISH_SOUND_BY_LABEL = {
     "Victory": "overwatch",
 }
 
+DIALOG_MIN_WIDTH = 500
+
 class SettingsDialog(QDialog):
     def __init__(self):
         QDialog.__init__(self, mw)
         self.setWindowTitle("Anki Brainrot Settings")
-        self.setFixedWidth(500)
         self._is_loading = True
 
         root_layout = QVBoxLayout(self)
+        root_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        self.setMinimumWidth(DIALOG_MIN_WIDTH)
+
+        root_margins = root_layout.contentsMargins()
+        helper_text_min_width = max(0, DIALOG_MIN_WIDTH - root_margins.left() - root_margins.right())
         helper_text = QLabel("""
             <b>Welcome to Anki Brainrot!</b><br>
             <br>
-            For the best experience, I recommend disabling "Show remaining card count" and "Show next review time above answer buttons" under the "Review" tab in Anki's settings.
+            For the best experience, I recommend disabling "Show remaining card count" and "Show next review time above answer buttons" under the "Review" tab in Anki's settings.<br>
+            <br>
+            As always, remember to use FSRS, always press "Again" if you get the card wrong, and suspend the cards that make you hate studying!
         """, self)
         helper_text.setWordWrap(True)
         helper_text.setStyleSheet("margin-bottom: 12px;")
+        helper_text.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        helper_text.setMinimumWidth(helper_text_min_width)
+        helper_text.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Maximum)
         root_layout.addWidget(helper_text)
 
         features_group = QGroupBox("Features", self)
@@ -57,6 +80,14 @@ class SettingsDialog(QDialog):
         features_layout.addWidget(make_feature_widget(self.sound_effects_checkbox, sound_layout))
         features_layout.addWidget(make_feature_widget(self.puppy_reinforcement_checkbox))
         root_layout.addWidget(features_group)
+
+        close_button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Close, self)
+        close_button = close_button_box.button(QDialogButtonBox.StandardButton.Close)
+        if not close_button:
+            raise Exception("Could not get close button")
+        close_button.setAutoDefault(False)
+        qconnect(close_button_box.rejected, self.reject)
+        root_layout.addWidget(close_button_box)
 
         self.deck_completion_sound_label.setEnabled(self.sound_effects_checkbox.isChecked())
         self.deck_completion_sound_select.setEnabled(self.sound_effects_checkbox.isChecked())
