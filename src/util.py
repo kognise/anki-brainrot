@@ -73,3 +73,9 @@ def set_config(config: dict):
     mw.addonManager.writeConfig(__name__, config)
     for hook in config_changed_hooks:
         hook()
+
+def migrate_config():
+    config = get_config()
+    if "card_flipping" not in config["sound_effects"]:
+        config["sound_effects"]["card_flipping"] = False
+    set_config(config)

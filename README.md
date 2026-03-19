@@ -11,6 +11,6 @@ My opinionated, lightweight gamification plugin for Anki, featuring:
 
 Everything is toggleable, but only the deck completion sound is configurable to whatever your brain has the biggest dopamine response to. I'll probably add more features in the future.
 
-<img src="https://doggo.ninja/oMc2H5.png" width="700">
+<img src="https://doggo.ninja/HtII1A.png" width="700">
 
 Contact me at [anki@kognise.dev](mailto:anki@kognise.dev).

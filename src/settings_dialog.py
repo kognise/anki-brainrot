@@ -70,7 +70,7 @@ class SettingsDialog(QDialog):
         self.sound_effects_checkbox = QCheckBox("🔔 Sound effects", self)
         self.puppy_reinforcement_checkbox = QCheckBox("🐶 Puppy reinforcement", self)
 
-        def make_feature_widget(checkbox: QCheckBox, nested_layout: Optional[QHBoxLayout] = None):
+        def make_feature_widget(checkbox: QCheckBox, nested_layout: Optional[QLayout] = None):
             feature_widget = QWidget(self)
             feature_layout = QVBoxLayout(feature_widget)
             feature_layout.setContentsMargins(0, 0, 0, 0)
@@ -80,8 +80,11 @@ class SettingsDialog(QDialog):
                 feature_layout.addLayout(nested_layout)
             return feature_widget
 
-        sound_layout = QHBoxLayout()
-        sound_layout.setSpacing(2)
+        sound_options_layout = QVBoxLayout()
+        sound_options_layout.setSpacing(1)
+
+        deck_completion_sound_row = QHBoxLayout()
+        deck_completion_sound_row.setSpacing(2)
         self.deck_completion_sound_label = QLabel("Deck completion sound", self)
         self.deck_completion_sound_select = QComboBox(self)
         self.deck_completion_sound_select.addItems(["Crossword", "Victory"])
@@ -99,14 +102,18 @@ class SettingsDialog(QDialog):
         self._preview_play_icon = self._build_preview_icon(is_playing=False)
         self._preview_stop_icon = self._build_preview_icon(is_playing=True)
         self._set_finish_sound_preview_icon(is_playing=False)
-        sound_layout.addWidget(self.deck_completion_sound_label)
-        sound_layout.addWidget(self.deck_completion_sound_select)
-        sound_layout.addWidget(self.deck_completion_sound_preview_button)
+        deck_completion_sound_row.addWidget(self.deck_completion_sound_label)
+        deck_completion_sound_row.addWidget(self.deck_completion_sound_select)
+        deck_completion_sound_row.addWidget(self.deck_completion_sound_preview_button)
+        sound_options_layout.addLayout(deck_completion_sound_row)
+
+        self.card_flipping_checkbox = QCheckBox("Answer reveal sound effect", self)
+        sound_options_layout.addWidget(self.card_flipping_checkbox)
 
         features_layout.addWidget(make_feature_widget(self.confetti_checkbox))
         features_layout.addWidget(make_feature_widget(self.progress_bar_checkbox))
         features_layout.addWidget(make_feature_widget(self.confirmation_popups_checkbox))
-        features_layout.addWidget(make_feature_widget(self.sound_effects_checkbox, sound_layout))
+        features_layout.addWidget(make_feature_widget(self.sound_effects_checkbox, sound_options_layout))
         features_layout.addWidget(make_feature_widget(self.puppy_reinforcement_checkbox))
         root_layout.addWidget(features_group)
 
@@ -118,9 +125,14 @@ class SettingsDialog(QDialog):
         qconnect(close_button_box.rejected, self.reject)
         root_layout.addWidget(close_button_box)
 
+        self.card_flipping_checkbox.setEnabled(self.sound_effects_checkbox.isChecked())
         self.deck_completion_sound_label.setEnabled(self.sound_effects_checkbox.isChecked())
         self.deck_completion_sound_select.setEnabled(self.sound_effects_checkbox.isChecked())
         self.deck_completion_sound_preview_button.setEnabled(self.sound_effects_checkbox.isChecked())
+        qconnect(
+            self.sound_effects_checkbox.toggled,
+            self.card_flipping_checkbox.setEnabled,
+        )
         qconnect(
             self.sound_effects_checkbox.toggled,
             self.deck_completion_sound_label.setEnabled,
@@ -152,6 +164,7 @@ class SettingsDialog(QDialog):
         qconnect(self.progress_bar_checkbox.toggled, self._save_config)
         qconnect(self.confirmation_popups_checkbox.toggled, self._save_config)
         qconnect(self.sound_effects_checkbox.toggled, self._save_config)
+        qconnect(self.card_flipping_checkbox.toggled, self._save_config)
         qconnect(self.deck_completion_sound_select.currentTextChanged, self._save_config)
         qconnect(self.puppy_reinforcement_checkbox.toggled, self._save_config)
 
@@ -162,6 +175,7 @@ class SettingsDialog(QDialog):
         self.progress_bar_checkbox.setChecked(config["progress_bar"]["enabled"])
         self.confirmation_popups_checkbox.setChecked(config["confirmation_popups"]["enabled"])
         self.sound_effects_checkbox.setChecked(config["sound_effects"]["enabled"])
+        self.card_flipping_checkbox.setChecked(config["sound_effects"].get("card_flipping", False))
 
         saved_finish_sound = config["sound_effects"]["victory_sound"]
         saved_label = next(
@@ -185,6 +199,7 @@ class SettingsDialog(QDialog):
             "confirmation_popups": {"enabled": self.confirmation_popups_checkbox.isChecked()},
             "sound_effects": {
                 "enabled": self.sound_effects_checkbox.isChecked(),
+                "card_flipping": self.card_flipping_checkbox.isChecked(),
                 "victory_sound": finish_sound,
             },
             "puppy_reinforcement": {"enabled": self.puppy_reinforcement_checkbox.isChecked()},
@@ -303,10 +318,10 @@ qconnect(action.triggered, open_settings_dialog)
 mw.form.menuTools.addAction(action)
 mw.addonManager.setConfigAction(__name__, open_settings_dialog)
 
-def maybe_open_settings_dialog_on_first_launch() -> None:
+def profile_did_open() -> None:
     config = get_config()
     if config.get("is_first_launch", True):
         set_config({**config, "is_first_launch": False})
         open_settings_dialog()
 
-gui_hooks.profile_did_open.append(maybe_open_settings_dialog_on_first_launch)
+gui_hooks.profile_did_open.append(profile_did_open)

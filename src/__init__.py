@@ -1,5 +1,7 @@
-from aqt import mw
+from .util import migrate_config
+migrate_config()
 
+from aqt import mw
 mw.addonManager.setWebExports(__name__, r"vendor/.*")
 
 from . import (

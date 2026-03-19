@@ -1,3 +1,4 @@
+from re import L
 from aqt.main import MainWindowState
 from typing import Literal, Union
 from aqt import QUrl, gui_hooks, mw
@@ -15,6 +16,7 @@ sound_names = [
     "hard",
     "buried",
     "suspended",
+    "flip",
 ]
 finish_sound_names = [
     "nyt",
@@ -42,6 +44,17 @@ config_changed()
 config_changed_hooks.append(config_changed)
 
 # Register GUI hooks
+def reviewer_did_show_answer(card: Card):
+    config = get_config()
+    if not config["sound_effects"]["enabled"]:
+        return
+    if not config["sound_effects"].get("card_flipping", False):
+        return
+
+    sound_effects["flip"].play()
+
+gui_hooks.reviewer_did_show_answer.append(reviewer_did_show_answer)
+
 def reviewer_did_answer_card(reviewer: Reviewer, card: Card, ease: Literal[1, 2, 3, 4]):
     if not get_config()["sound_effects"]["enabled"]:
         return

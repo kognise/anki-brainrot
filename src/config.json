@@ -4,6 +4,7 @@
     "confirmation_popups": { "enabled": true },
     "sound_effects": {
         "enabled": true,
+        "card_flipping": false,
         "victory_sound": "nyt"
     },
     "puppy_reinforcement": { "enabled": true }
